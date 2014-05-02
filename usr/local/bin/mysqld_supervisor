@@ -1,0 +1,8 @@
+#!/bin/bash
+
+/usr/bin/mysqld_safe &
+PID=`cat /var/run/mysqld/mysqld.pid`
+
+trap "kill -SIGQUIT $PID" INT
+trap "kill -SIGQUIT $PID" TERM
+wait
