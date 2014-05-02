@@ -1,8 +1,10 @@
 #!/bin/bash
+# TODO(jistr): get rid of this script when we use supervisor >= 3.0
 
 /usr/bin/mysqld_safe &
+sleep 1
 PID=`cat /var/run/mysqld/mysqld.pid`
 
-trap "kill -SIGQUIT $PID" INT
-trap "kill -SIGQUIT $PID" TERM
+trap 'kill -SIGQUIT $PID; wait' INT
+trap 'kill -SIGQUIT $PID; wait' TERM
 wait

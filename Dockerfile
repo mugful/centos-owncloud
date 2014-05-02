@@ -22,6 +22,7 @@ RUN rm /owncloud-install.sh
 ADD etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf
 ADD etc/supervisord.conf /etc/supervisord.conf
 ADD usr/local/bin/mysqld_supervisor /usr/local/bin/mysqld_supervisor
+ADD usr/local/bin/volume_permissions /usr/local/bin/volume_permissions
 
 VOLUME ["/var/www/html/owncloud/apps", "/var/www/html/owncloud/config", "/var/www/html/owncloud/data", "/var/lib/mysql"]
 
