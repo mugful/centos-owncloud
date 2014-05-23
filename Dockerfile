@@ -23,6 +23,9 @@ ADD etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf
 ADD etc/supervisord.conf /etc/supervisord.conf
 ADD usr/local/bin/mysqld_supervisor /usr/local/bin/mysqld_supervisor
 ADD usr/local/bin/volume_permissions /usr/local/bin/volume_permissions
+ADD usr/local/bin/owncloud_init /usr/local/bin/owncloud_init
+ADD usr/local/share/owncloud/autoconfig.php.template /usr/local/share/owncloud/autoconfig.php.template
+ADD usr/local/share/owncloud/config.php.template /usr/local/share/owncloud/config.php.template
 
 VOLUME ["/var/www/html/owncloud/apps", "/var/www/html/owncloud/config", "/var/www/html/owncloud/data", "/var/lib/mysql"]
 

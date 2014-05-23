@@ -1,0 +1,13 @@
+<?php
+$AUTOCONFIG = array(
+  "dbtype"        => "mysql",
+  "dbname"        => "owncloud",
+  "dbuser"        => "owncloud",
+  "dbpass"        => "INSERT_DB_PASSWORD",
+  "dbhost"        => "localhost",
+  "dbtableprefix" => "",
+  "adminlogin"    => "admin",
+  "adminpass"     => "INSERT_ADMIN_PASSWORD",
+  "directory"     => "/var/www/html/owncloud/data",
+  "check_for_working_webdav" => false,
+);

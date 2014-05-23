@@ -1,0 +1,105 @@
+#!/bin/bash
+
+set -euxo pipefail
+
+INITRC_PATH=/var/www/html/owncloud/config/initrc
+if [ -e "$INITRC_PATH" ]; then
+    source "$INITRC_PATH"
+fi
+
+function main() {
+    ROOT_DB_PASSWORD=${ROOT_DB_PASSWORD:-$(random_password)}
+    DB_PASSWORD=${DB_PASSWORD:-$(random_password)}
+    ADMIN_PASSWORD=${ADMIN_PASSWORD:-$(random_password)}
+
+    write_initrc
+    wait_for_mysql
+    create_owncloud_db
+    set_root_db_password
+    create_autoconfig
+    create_config
+}
+
+function wait_for_mysql() {
+    PID=
+    while [ -z "$PID" ]; do
+        PID=$(cat /var/run/mysqld/mysqld.pid || true)
+        sleep 2
+    done
+}
+
+function create_owncloud_db() {
+    can_connect=0
+    mysql -u root -h localhost <<< 'select 0;' || can_connect=$?
+    db_exists=0
+    mysql -u root -h localhost -D owncloud <<< 'select 0;' || db_exists=$?
+
+    if [ $db_exists -ne 0  -a  $can_connect -eq 0 ]; then
+        mysql -u root -h localhost <<< "CREATE USER 'owncloud'@'localhost' IDENTIFIED BY '$DB_PASSWORD';" || true
+        mysql -u root -h localhost <<< "CREATE DATABASE IF NOT EXISTS owncloud;"
+        mysql -u root -h localhost <<< "GRANT ALL ON owncloud.* TO 'owncloud'@'localhost';"
+    fi
+}
+
+function set_root_db_password() {
+    can_connect=0
+    mysql -u root -h localhost <<< 'select 0;' || can_connect=$?
+
+    if [ $can_connect -eq 0 ]; then
+        mysqladmin -u root password "$ROOT_DB_PASSWORD"
+    fi
+}
+
+function create_autoconfig() {
+    template_path="/usr/local/share/owncloud/autoconfig.php.template"
+    autoconfig_path="/var/www/html/owncloud/config/autoconfig.php"
+    config_path="/var/www/html/owncloud/config/config.php"
+
+    if [ ! -e "$config_path" -a ! -e "$autoconfig_path" ]; then
+        < "$template_path" cat \
+            | sed -e "s/INSERT_DB_PASSWORD/$DB_PASSWORD/" \
+            | sed -e "s/INSERT_ADMIN_PASSWORD/$ADMIN_PASSWORD/" \
+            > "$autoconfig_path"
+        chown apache. "$autoconfig_path"
+        chmod 0600 "$autoconfig_path"
+    fi
+}
+
+function create_config() {
+    template_path="/usr/local/share/owncloud/config.php.template"
+    config_path="/var/www/html/owncloud/config/config.php"
+
+    if [ ! -e "$config_path" ]; then
+        # not using cp in case there will be customizations
+        < "$template_path" cat \
+            > "$config_path"
+        chown apache. "$config_path"
+        chmod 0600 "$config_path"
+    fi
+}
+
+function write_initrc() {
+    if [ ! -e "$INITRC_PATH" ]; then
+        cat > "$INITRC_PATH" <<EOF
+export ROOT_DB_PASSWORD=$ROOT_DB_PASSWORD
+export DB_PASSWORD=$DB_PASSWORD
+export ADMIN_PASSWORD=$ADMIN_PASSWORD
+EOF
+        chmod 0600 "$INITRC_PATH"
+    fi
+}
+
+function random_password() {
+    < /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c${1:-32}; true
+}
+
+main
+
+# wait for SIGINT OR SIGTERM
+# TODO(jistr): remove this when we use supervisor >= 3.0
+FIFO=/tmp/owncloud_init_wait
+mkfifo "$FIFO"
+trap 'echo INT caught; kill $(jobs -p); rm $FIFO' INT
+trap 'echo TERM caught; kill $(jobs -p); rm $FIFO' TERM
+read < "$FIFO" &
+wait
