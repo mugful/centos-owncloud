@@ -29,7 +29,7 @@ ADD usr/local/bin/owncloud_init /usr/local/bin/owncloud_init
 ADD usr/local/share/owncloud/autoconfig.php.template /usr/local/share/owncloud/autoconfig.php.template
 ADD usr/local/share/owncloud/config.php.template /usr/local/share/owncloud/config.php.template
 
-VOLUME ["/var/www/html/owncloud/apps", "/var/www/html/owncloud/config", "/var/www/html/owncloud/data", "/var/lib/mysql"]
+VOLUME ["/var/www/html/owncloud/config", "/var/www/html/owncloud/data", "/var/lib/mysql"]
 
 EXPOSE 80
 EXPOSE 443
