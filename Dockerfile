@@ -13,6 +13,8 @@
 FROM centos:6.4
 MAINTAINER Jiri Stransky <jistr@jistr.com>
 
+ADD usr/local/share/owncloud/rebuild_counter /usr/local/share/owncloud/rebuild_counter
+
 RUN yum -y update; yum clean all
 
 ADD owncloud-install.sh /owncloud-install.sh
