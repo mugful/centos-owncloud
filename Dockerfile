@@ -10,7 +10,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-FROM centos:6.4
+FROM centos:centos6
 MAINTAINER Jiri Stransky <jistr@jistr.com>
 
 ADD usr/local/share/owncloud/rebuild_counter /usr/local/share/owncloud/rebuild_counter
