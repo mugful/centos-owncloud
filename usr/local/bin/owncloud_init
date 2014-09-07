@@ -23,7 +23,7 @@ function main() {
 function wait_for_mysql() {
     PID=
     while [ -z "$PID" ]; do
-        PID=$(cat /var/run/mysqld/mysqld.pid || true)
+        PID=$(cat /var/run/mariadb/mariadb.pid || true)
         sleep 2
     done
 }
@@ -94,12 +94,3 @@ function random_password() {
 }
 
 main
-
-# wait for SIGINT OR SIGTERM
-# TODO(jistr): remove this when we use supervisor >= 3.0
-FIFO=/tmp/owncloud_init_wait
-mkfifo "$FIFO"
-trap 'echo INT caught; kill $(jobs -p); rm $FIFO' INT
-trap 'echo TERM caught; kill $(jobs -p); rm $FIFO' TERM
-read < "$FIFO" &
-wait

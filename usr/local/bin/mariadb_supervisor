@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -euxo pipefail
+
+if [ ! -e /var/lib/mysql/mysql ]; then
+    /usr/bin/mysql_install_db
+fi
+
+exec /usr/bin/mysqld_safe

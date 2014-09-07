@@ -6,9 +6,9 @@ OWNCLOUD_VERSION=$(cat /usr/local/share/owncloud/owncloud_major_version | tr -d 
 
 yum -y install wget
 
-rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-1.noarch.rpm
 
-wget -O "/etc/yum.repos.d/isv:ownCloud:community:$OWNCLOUD_VERSION.0.repo" "http://download.opensuse.org/repositories/isv:/ownCloud:/community:/$OWNCLOUD_VERSION.0/CentOS_CentOS-6/isv:ownCloud:community:$OWNCLOUD_VERSION.0.repo"
+wget -O "/etc/yum.repos.d/isv:ownCloud:community:$OWNCLOUD_VERSION.0.repo" "http://download.opensuse.org/repositories/isv:/ownCloud:/community:/$OWNCLOUD_VERSION.0/CentOS_CentOS-7/isv:ownCloud:community:$OWNCLOUD_VERSION.0.repo"
 
 # check that version is correct
 AVAILABLE_VERSION=$(yum info available owncloud | grep ^Version | awk '{ print $3 }' | awk -F. '{ print $1; }')
@@ -17,7 +17,7 @@ if [ "$OWNCLOUD_VERSION" != "$AVAILABLE_VERSION" ]; then
     exit 1
 fi
 
-yum -y install httpd mod_ssl mysql-server owncloud supervisor
+yum -y install httpd mod_ssl mariadb-galera-server owncloud supervisor
 
 # CentOS image comes cleaned of locales, reinstall them
 yum -y reinstall glibc-common

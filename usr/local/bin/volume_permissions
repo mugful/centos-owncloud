@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euxo pipefail
+
 chown -R apache:apache /var/www/html/owncloud/apps
 chmod 0750             /var/www/html/owncloud/apps
 
@@ -10,12 +12,3 @@ chown -R apache:apache /var/www/html/owncloud/data
 chmod 0750             /var/www/html/owncloud/data
 
 chown -R mysql:mysql /var/lib/mysql
-
-# wait for SIGINT OR SIGTERM
-# TODO(jistr): remove this when we use supervisor >= 3.0
-FIFO=/tmp/volume_permissions_wait
-mkfifo "$FIFO"
-trap 'echo INT caught; kill $(jobs -p); rm $FIFO' INT
-trap 'echo TERM caught; kill $(jobs -p); rm $FIFO' TERM
-read < "$FIFO" &
-wait
