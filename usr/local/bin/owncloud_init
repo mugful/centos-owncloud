@@ -8,46 +8,57 @@ if [ -e "$INITRC_PATH" ]; then
 fi
 
 function main() {
-    ROOT_DB_PASSWORD=${ROOT_DB_PASSWORD:-$(random_password)}
     DB_PASSWORD=${DB_PASSWORD:-$(random_password)}
     ADMIN_PASSWORD=${ADMIN_PASSWORD:-$(random_password)}
 
     set_directory_permissions
     write_initrc
-    wait_for_mysql
+    postgresql_initdb
+    wait_for_postgresql
     create_owncloud_db
-    set_root_db_password
     create_autoconfig
     create_config
 }
 
-function wait_for_mysql() {
-    PID=
-    while [ -z "$PID" ]; do
-        PID=$(cat /var/run/mariadb/mariadb.pid || true)
+function postgresql_initdb() {
+    PGDATA=/var/lib/pgsql/data
+    if [ ! -e "$PGDATA" ]; then
+        # use mv to make the init atomic
+        su - postgres -c "initdb -D $PGDATA.init"
+        cat > $PGDATA.init/pg_hba.conf <<EOF
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+# "local" is for Unix domain socket connections only
+local   all             all                                     ident
+local   owncloud        owncloud                                md5
+
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            md5
+
+# IPv6 local connections:
+host    all             all             ::1/128                 md5
+EOF
+        su - postgres -c "mv $PGDATA.init $PGDATA"
+    fi
+}
+
+function wait_for_postgresql() {
+    while true; do
+        if su - postgres -c "psql <<< 'select 0;' > /dev/null"; then
+            break
+        fi
+        echo "Waiting for postgresql..."
         sleep 2
     done
 }
 
 function create_owncloud_db() {
-    can_connect=0
-    mysql -u root -h localhost <<< 'select 0;' || can_connect=$?
     db_exists=0
-    mysql -u root -h localhost -D owncloud <<< 'select 0;' || db_exists=$?
+    su - postgres -c "psql <<< '\l'" | grep owncloud || db_exists=$?
 
-    if [ $db_exists -ne 0  -a  $can_connect -eq 0 ]; then
-        mysql -u root -h localhost <<< "CREATE USER 'owncloud'@'localhost' IDENTIFIED BY '$DB_PASSWORD';" || true
-        mysql -u root -h localhost <<< "CREATE DATABASE IF NOT EXISTS owncloud;"
-        mysql -u root -h localhost <<< "GRANT ALL ON owncloud.* TO 'owncloud'@'localhost';"
-    fi
-}
-
-function set_root_db_password() {
-    can_connect=0
-    mysql -u root -h localhost <<< 'select 0;' || can_connect=$?
-
-    if [ $can_connect -eq 0 ]; then
-        mysqladmin -u root password "$ROOT_DB_PASSWORD"
+    if [ $db_exists -ne 0 ]; then
+        su - postgres -c "psql <<< \"CREATE USER owncloud WITH PASSWORD '$DB_PASSWORD';\""
+        su - postgres -c "psql <<< \"CREATE DATABASE owncloud OWNER owncloud;\""
     fi
 }
 
@@ -82,7 +93,6 @@ function create_config() {
 function write_initrc() {
     if [ ! -e "$INITRC_PATH" ]; then
         cat > "$INITRC_PATH" <<EOF
-export ROOT_DB_PASSWORD=$ROOT_DB_PASSWORD
 export DB_PASSWORD=$DB_PASSWORD
 export ADMIN_PASSWORD=$ADMIN_PASSWORD
 EOF
@@ -96,6 +106,9 @@ function set_directory_permissions() {
 
     chown -R apache:apache /var/www/html/owncloud/data
     chmod 0750             /var/www/html/owncloud/data
+
+    chown -R postgres:postgres /var/lib/pgsql
+    chmod 0750                 /var/lib/pgsql
 }
 
 function random_password() {

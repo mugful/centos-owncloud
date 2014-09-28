@@ -1,6 +1,6 @@
 <?php
 $AUTOCONFIG = array(
-  "dbtype"        => "mysql",
+  "dbtype"        => "postgresql",
   "dbname"        => "owncloud",
   "dbuser"        => "owncloud",
   "dbpass"        => "INSERT_DB_PASSWORD",
