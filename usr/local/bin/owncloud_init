@@ -18,6 +18,7 @@ function main() {
     create_owncloud_db
     create_autoconfig
     create_config
+    install_owncloud
 }
 
 function postgresql_initdb() {
@@ -88,6 +89,10 @@ function create_config() {
         chown apache. "$config_path"
         chmod 0600 "$config_path"
     fi
+}
+
+function install_owncloud() {
+    curl http://localhost
 }
 
 function write_initrc() {
