@@ -2,6 +2,9 @@
 
 set -euxo pipefail
 
+chown -R mysql:mysql   /var/lib/mysql
+chmod 0750             /var/lib/mysql
+
 if [ ! -e /var/lib/mysql/mysql ]; then
     /usr/bin/mysql_install_db
 fi

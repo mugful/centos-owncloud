@@ -12,6 +12,7 @@ function main() {
     DB_PASSWORD=${DB_PASSWORD:-$(random_password)}
     ADMIN_PASSWORD=${ADMIN_PASSWORD:-$(random_password)}
 
+    set_directory_permissions
     write_initrc
     wait_for_mysql
     create_owncloud_db
@@ -87,6 +88,14 @@ export ADMIN_PASSWORD=$ADMIN_PASSWORD
 EOF
         chmod 0600 "$INITRC_PATH"
     fi
+}
+
+function set_directory_permissions() {
+    chown -R apache:apache /var/www/html/owncloud/config
+    chmod 0750             /var/www/html/owncloud/config
+
+    chown -R apache:apache /var/www/html/owncloud/data
+    chmod 0750             /var/www/html/owncloud/data
 }
 
 function random_password() {

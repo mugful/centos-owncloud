@@ -17,7 +17,7 @@ if [ "$OWNCLOUD_VERSION" != "$AVAILABLE_VERSION" ]; then
     exit 1
 fi
 
-yum -y install httpd mod_ssl mariadb-galera-server owncloud supervisor
+yum -y install httpd mod_ssl mariadb-server owncloud supervisor tmux
 
 # CentOS image comes cleaned of locales, reinstall them
 yum -y reinstall glibc-common
