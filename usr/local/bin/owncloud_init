@@ -24,7 +24,8 @@ function main() {
 function postgresql_initdb() {
     PGDATA=/var/lib/pgsql/data
     if [ ! -e "$PGDATA" ]; then
-        # use mv to make the init atomic
+        # use mv to make the init atomic and prevent postgresql from
+        # starting when initdb is still in progress
         su - postgres -c "initdb -D $PGDATA.init"
         cat > $PGDATA.init/pg_hba.conf <<EOF
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
