@@ -20,9 +20,9 @@ Run
 
 * Label the directories to make SELinux happy.
 
-    chcon -R system_u:object_r:svirt_sandbox_file_t:s0 /var/lib/owncloud/data
-    chcon -R system_u:object_r:svirt_sandbox_file_t:s0 /var/lib/owncloud/config
-    chcon -R system_u:object_r:docker_var_lib_t:s0     /var/lib/owncloud/pgsql
+    chcon -R -t svirt_sandbox_file_t /var/lib/owncloud/data
+    chcon -R -t svirt_sandbox_file_t /var/lib/owncloud/config
+    chcon -R -t docker_var_lib_t     /var/lib/owncloud/pgsql
 
 * Run ownCloud docker container.
 

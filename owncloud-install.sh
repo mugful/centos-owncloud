@@ -4,9 +4,7 @@ set -euxo pipefail
 
 OWNCLOUD_VERSION=$(cat /usr/local/share/owncloud/owncloud_major_version | tr -d '\n')
 
-yum -y install wget
-
-rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-2.noarch.rpm
+yum -y install wget epel-release
 
 wget -O "/etc/yum.repos.d/isv:ownCloud:community:$OWNCLOUD_VERSION.0.repo" "http://download.opensuse.org/repositories/isv:/ownCloud:/community:/$OWNCLOUD_VERSION.0/CentOS_CentOS-7/isv:ownCloud:community:$OWNCLOUD_VERSION.0.repo"
 
@@ -20,7 +18,7 @@ fi
 # CentOS image comes cleaned of locales, reinstall them
 yum -y reinstall glibc-common
 
-yum -y install httpd mod_ssl postgresql-server php-pgsql owncloud supervisor tmux
+yum -y install httpd mod_ssl postgresql-server php-gd php-pgsql owncloud screen supervisor tmux
 
 # not present in centos image, mysql wants it to exist
 touch /etc/sysconfig/network
