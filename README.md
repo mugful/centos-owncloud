@@ -16,21 +16,21 @@ Run
 
 * Prepare a place for ownCloud volumes on the host machine.
 
-    mkdir -p /var/lib/owncloud/{config,data,postgresql}
+        mkdir -p /var/lib/owncloud/{config,data,postgresql}
 
 * Label the directories to make SELinux happy.
 
-    chcon -R -t svirt_sandbox_file_t /var/lib/owncloud/data
-    chcon -R -t svirt_sandbox_file_t /var/lib/owncloud/config
-    chcon -R -t docker_var_lib_t     /var/lib/owncloud/pgsql
+        chcon -R -t svirt_sandbox_file_t /var/lib/owncloud/data
+        chcon -R -t svirt_sandbox_file_t /var/lib/owncloud/config
+        chcon -R -t docker_var_lib_t     /var/lib/owncloud/pgsql
 
 * Run ownCloud docker container.
 
-    docker run -p 8000:80 \
-        -v /var/lib/owncloud/config:/var/www/html/owncloud/config
-        -v /var/lib/owncloud/data:/var/www/html/owncloud/data
-        -v /var/lib/owncloud/pgsql:/var/lib/pgsql
-        dockingbay/centos-owncloud:latest
+        docker run -p 8000:80 \
+            -v /var/lib/owncloud/config:/var/www/html/owncloud/config
+            -v /var/lib/owncloud/data:/var/www/html/owncloud/data
+            -v /var/lib/owncloud/pgsql:/var/lib/pgsql
+            dockingbay/centos-owncloud:latest
 
   This will bind ownCloud to port 8000. This is ok for testing, but
   for real use you'll want to put a reverse proxy in front of it and
