@@ -24,6 +24,14 @@ Run
         chcon -R -t svirt_sandbox_file_t /var/lib/owncloud/config
         chcon -R -t docker_var_lib_t     /var/lib/owncloud/pgsql
 
+  On a production system you'll want to run this instead, to make the
+  labels permanent:
+
+        semanage fcontext -a -t svirt_sandbox_file_t /var/lib/owncloud/data(/.*)?
+        semanage fcontext -a -t svirt_sandbox_file_t /var/lib/owncloud/config(/.*)?
+        semanage fcontext -a -t docker_var_lib_t /var/lib/owncloud/pgsql(/.*)?
+        restorecon -Rv /var/lib/owncloud
+
 * Run ownCloud docker container.
 
         docker run -p 8000:80 \
