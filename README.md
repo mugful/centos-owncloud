@@ -6,7 +6,7 @@ The ownCloud docker image on top of CentOS 7.
 Pull
 ----
 
-    docker pull dockingbay/centos-owncloud:latest .
+    docker pull dockingbay/centos-owncloud:latest
 
 Usually you'll want to pull some specific tag instead of `latest`. See
 [available centos-owncloud tags](https://registry.hub.docker.com/u/dockingbay/centos-owncloud/tags/manage/).
