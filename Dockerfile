@@ -14,7 +14,7 @@ FROM centos:centos7
 MAINTAINER Jiri Stransky <jistr@jistr.com>
 
 ADD usr/local/share/owncloud/rebuild_counter /usr/local/share/owncloud/rebuild_counter
-ADD usr/local/share/owncloud/owncloud_major_version /usr/local/share/owncloud/owncloud_major_version
+ADD usr/local/share/owncloud/owncloud_version /usr/local/share/owncloud/owncloud_version
 
 RUN yum -y update; yum clean all
 

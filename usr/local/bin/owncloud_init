@@ -18,6 +18,7 @@ function main() {
     create_owncloud_db
     create_autoconfig
     create_config
+    copy_system_ca_bundle
     install_owncloud
 }
 
@@ -89,6 +90,15 @@ function create_config() {
             > "$config_path"
         chown apache. "$config_path"
         chmod 0600 "$config_path"
+    fi
+}
+
+function copy_system_ca_bundle {
+    system_ca_bundle="/etc/pki/tls/certs/ca-bundle.crt"
+    owncloud_ca_bundle="/var/www/html/owncloud/config/ca-bundle.crt"
+
+    if [ ! -e "$owncloud_ca_bundle" ]; then
+        cp "$system_ca_bundle" "$owncloud_ca_bundle"
     fi
 }
 
