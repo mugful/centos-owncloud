@@ -4,9 +4,9 @@ set -euxo pipefail
 
 OWNCLOUD_VERSION=$(cat /usr/local/share/owncloud/owncloud_version | tr -d '\n')
 
-yum -y install wget epel-release
+yum -y install epel-release
 
-wget -O "/etc/yum.repos.d/isv:ownCloud:community:$OWNCLOUD_VERSION.repo" "http://download.opensuse.org/repositories/isv:/ownCloud:/community:/$OWNCLOUD_VERSION/CentOS_7/isv:ownCloud:community:$OWNCLOUD_VERSION.repo"
+curl -o "/etc/yum.repos.d/owncloud-$OWNCLOUD_VERSION.repo" "http://download.owncloud.org/download/repositories/$OWNCLOUD_VERSION/CentOS_7/ce:$OWNCLOUD_VERSION.repo"
 
 # check that version is correct
 AVAILABLE_VERSION=$(yum info available owncloud | grep ^Version | awk '{ print $3 }' | awk -F. '{ print $1"."$2; }')
