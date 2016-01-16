@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -eux
+
+pushd /var/www/html/owncloud
+
+# can return nonzero if already upgraded
+su apache -s /bin/bash -c './occ upgrade' || true
+
+popd
