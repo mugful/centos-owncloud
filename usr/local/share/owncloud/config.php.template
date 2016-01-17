@@ -2,8 +2,4 @@
 $CONFIG = array (
   'installed' => false,
   'check_for_working_webdav' => false,
-  'memcache.local' => '\OC\Memcache\Memcached',
-  'memcached_servers' => array(
-     array('localhost', 11211),
-  ),
 );
