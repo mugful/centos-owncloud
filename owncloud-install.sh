@@ -18,7 +18,7 @@ fi
 # CentOS image comes cleaned of locales, reinstall them
 yum -y reinstall glibc-common
 
-yum -y install httpd mod_ssl postgresql-server php-gd php-pgsql owncloud screen supervisor tmux
+yum -y install httpd memcached mod_ssl postgresql-server php-gd php-pecl-memcached php-pgsql owncloud screen supervisor tmux
 
 # not present in centos image, mysql wants it to exist
 touch /etc/sysconfig/network
